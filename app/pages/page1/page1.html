@@ -1,0 +1,12 @@
+<ion-navbar *navbar>
+  <ion-title>Tab 1</ion-title>
+</ion-navbar>
+
+<ion-content padding class="page1">
+  <h2>Welcome to Ionic!</h2>
+  <ion-list>
+    <ion-item *ngFor="#course of courses">
+      {{course.id}} {{course.name}}
+    </ion-item>
+  </ion-list>
+</ion-content>
