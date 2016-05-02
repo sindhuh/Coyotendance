@@ -20,7 +20,7 @@ export class Backend {
       return Promise.resolve(this.courses);
     }    
     return new Promise(resolve => {
-      this.http.get(this.BASE_URL + "courses.php")
+      this.http.get(this.BASE_URL + "courses")
         .map(res => res.json())
         .subscribe(data => {
           this.courses = data;
@@ -31,7 +31,7 @@ export class Backend {
   
   saveCourse(userId : string, course : any) {
     return new Promise(resolve => {
-      this.http.post(this.BASE_URL + "course.php", "")
+      this.http.post(this.BASE_URL + "course", "")
         .subscribe(data => {
           resolve(data);
         });
@@ -50,7 +50,7 @@ export class Backend {
   
   markAttendance(userId : string, courseId : string) {
     return new Promise(resolve => {
-      this.http.post(this.BASE_URL + "attendance.php", "")
+      this.http.post(this.BASE_URL + "attendance", "")
         .subscribe(data => {
           resolve(data);
         });
@@ -59,7 +59,7 @@ export class Backend {
   
   markStudentAttendance(userId : string, studentId : string, courseId : string) {
     return new Promise(resolve => {
-      this.http.post(this.BASE_URL + "prof_attendance.php", "")
+      this.http.post(this.BASE_URL + "prof_attendance", "")
         .subscribe(data => {
           resolve(data);
         });
@@ -68,7 +68,7 @@ export class Backend {
   
   login(userId, password) {
     return new Promise(resolve => {
-      this.http.post(this.BASE_URL + "login.php", "")
+      this.http.post(this.BASE_URL + "login", "")
         .subscribe(data => {
           resolve(data);
         });
