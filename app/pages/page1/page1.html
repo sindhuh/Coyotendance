@@ -12,7 +12,7 @@
   <h2>Welcome to Ionic!</h2>
   <ion-list>
     <ion-item *ngFor="#course of courses" (click) = "viewCourse(course)">
-      {{course.id}} {{course.name}}
+      {{course._id}} {{course.name}}
     </ion-item>
   </ion-list>
 </ion-content>
