@@ -6,8 +6,19 @@
 -->
 <ion-navbar *navbar>
   <ion-title>course-details</ion-title>
+  <ion-buttons end>
+    <button (click) ="editClass()">EDIT</button>
+  </ion-buttons>
 </ion-navbar>
 
 <ion-content padding class="course-details">
-  
+ <ion-card>
+     <ion-card-header>
+       {{course.name}}
+    </ion-card-header>
+    <ion-card-content>
+        {{course.title}} <br>
+       {{course.location}} 
+    </ion-card-content>
+  </ion-card>
 </ion-content>

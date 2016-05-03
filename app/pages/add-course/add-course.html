@@ -7,18 +7,26 @@
 <ion-navbar *navbar>
   <ion-title>add course</ion-title>
   <ion-buttons end>
-    <button (click) ="saveClass()">save</button>
+    <button (click)="updateClass()">save</button>
   </ion-buttons>
 </ion-navbar>
 <ion-content padding class="add-course">
   <ion-list>
     <ion-item>
-      <ion-label floating>Class</ion-label>
-      <ion-input type="text" [(ngModel)]="id"></ion-input>
+      <ion-label floating>Course Code</ion-label>
+      <ion-input type="text" [(ngModel)]="course.name"></ion-input>
+
     </ion-item>
     <ion-item>
-      <ion-label floating>Name</ion-label>
-      <ion-textarea [(ngModel)]="name"></ion-textarea>
+      <ion-label floating>Description</ion-label>
+      <ion-input [(ngModel)]="course.title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Location</ion-label>
+      <ion-input [(ngModel)]="course.location"></ion-input>
+      <ion-select [(ngModel)]="selected" multiple="true" cancelText="Cancel" okText="Okay!" (ngModelChange)="doSomething()">
+        <ion-option *ngFor="#location  of locations;" value="{{location.id}}">{{ location.id }}</ion-option>
+      </ion-select>
     </ion-item>
   </ion-list>
 </ion-content>

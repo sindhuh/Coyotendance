@@ -1,4 +1,6 @@
-import {Page, NavController} from 'ionic-angular';
+import {Page, NavParams, NavController} from 'ionic-angular';
+import {AddCoursePage} from '../add-course/add-course';
+import {Backend} from '../../providers/backend/backend';
 
 /*
   Generated class for the CourseDetailsPage page.
@@ -10,9 +12,17 @@ import {Page, NavController} from 'ionic-angular';
   templateUrl: 'build/pages/course-details/course-details.html',
 })
 export class CourseDetailsPage {
-  constructor(public nav: NavController) {}
+  course: any;
+  constructor(public nav: NavController, public backend: Backend, public navParams: NavParams) {
+    this.course = {};
+    if(this.navParams.get('id') != undefined) {
+      backend.getCourse(this.navParams.get('id')).then(course => {
+        this.course = course;
+      });
+    }   
+  }
   
-  updateClass() {
-    
+  editClass() {
+    this.nav.push(AddCoursePage, {id: this.course._id});
   }
 }
