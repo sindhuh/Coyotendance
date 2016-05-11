@@ -2,19 +2,15 @@
   <ion-title>Coyotendance</ion-title>
   <ion-buttons end>
      <button (click)="logOut()">
-     <ion-icon name='log-out'></ion-icon>
+       <ion-icon name="log-out"></ion-icon>
       logout
-    </button>
-    <button (click)="addCourse()">
-      <ion-icon name='create'></ion-icon>
-      Add 
     </button>
   </ion-buttons>
 </ion-navbar>
-<ion-content padding class="page1">
+<ion-content padding class="">
   <ion-list>
-    <ion-item-sliding *ngFor="#course of courses">
-      <ion-item (click)="openMenu(course)">
+    <ion-item-sliding *ngFor="#course of enrolledCourses">
+      <ion-item (click) = "openMenu(course)">
         {{course.name}}
          {{course.title}}
           {{course.location}}

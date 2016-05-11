@@ -12,31 +12,29 @@ import {Backend} from '../../providers/backend/backend';
 export class AddCoursePage {
   course: any;
   locations: any;
+  selectedLocation:string;
   constructor(public nav: NavController, public backend: Backend, public navParams: NavParams) {
     this.course = {};
+    this.course.professorID = this.backend.userDetails._id;
+    this.course.students = [];
+    this.backend.loadLocations().then(locations => {
+      this.locations = locations;  
+    });
+
     if (this.navParams.get('id') != undefined) {
       backend.getCourse(this.navParams.get('id')).then(course => {
         this.course = Object.assign({}, course);
       });
     }
-    // this.backend.loadCourselist().then(list => {
-    //   this.locations = list;
-    //  }) ;
-    //console.log(">>>> locations list" +this.backend.loadCourselist());
-    // this.locations = [{"id": 1}, {"id" : 2}]
   }
-
+  
   updateClass() {
-    console.log("reaching here");
-    // show loading spinner.
     let loading = Loading.create({
       content: 'Please wait...'
     });
-    this.nav.present(loading);
-
+    this.nav.present(loading);  
     var self = this;
     this.backend.updateCourse(this.course).then(function () {
-      // hide loading spinner.
       setTimeout(() => {
         loading.dismiss();
       }); 

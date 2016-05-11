@@ -1,0 +1,16 @@
+
+<ion-navbar primary *navbar>
+  <ion-title>Coyotendance</ion-title>
+</ion-navbar>
+
+<ion-content padding class="available-courses">
+   <ion-list>
+    <ion-item-sliding *ngFor="#course of availableCourses">
+      <ion-item (click) = "openMenu(course)">
+        {{course.name}}
+         {{course.title}}
+          {{course.location}}
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>
