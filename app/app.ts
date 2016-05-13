@@ -1,6 +1,6 @@
 import {App, Platform} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
-import {TabsPage} from './pages/tabs/tabs';
+import {AuthPage} from './pages/auth/auth';
 import {Backend} from './providers/backend/backend';
 
 @App({
@@ -9,7 +9,7 @@ import {Backend} from './providers/backend/backend';
   providers: [Backend]
 })
 export class MyApp {
-  rootPage: any = TabsPage;
+  rootPage: any = AuthPage ;
 
   constructor(platform: Platform) {
     platform.ready().then(() => {

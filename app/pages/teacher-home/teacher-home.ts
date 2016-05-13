@@ -10,5 +10,7 @@ import {Page, NavController} from 'ionic-angular';
   templateUrl: 'build/pages/teacher-home/teacher-home.html',
 })
 export class TeacherHomePage {
-  constructor(public nav: NavController) {}
+  constructor(public nav: NavController) {
+    
+  }
 }
