@@ -116,7 +116,7 @@ server.get("/courses/:id", function (req, res, next) {
 });
 
 server.get('/enrolledCourses/:id', function (req, res, next) {
-    db.courses.find({ "students.studentId": req.params.id }, function (err, data) {
+    db.courses.find({ "students": ObjectId(req.params.id) }, function (err, data) {
         res.writeHead(200, {
             'Content-Type': 'application/json; charset=utf-8'
         });
@@ -124,24 +124,9 @@ server.get('/enrolledCourses/:id', function (req, res, next) {
     });
     return next();
 });
-
-server.post('/users', function (req, res, next) {
-    var students = JSON.parse(req.body);
-    console.log("req.body  ", req.body, students);
-    db.appUsers.find('_id', { $exits: true, $in: students.studentId }, function (err, data) {
-        res.writeHead(200, {
-            'Content-Type': 'application/json; charset=utf-8'
-        });
-        data.password = "";
-        console.log(data);
-        res.end(JSON.stringify(data));
-    });
-    return next();
-});
-
 
 server.get('/availableCourses/:id', function (req, res, next) {
-    db.courses.find({ "students.studentId": { $ne: req.params.id } }, function (err, data) {
+    db.courses.find({ "students": { $ne: ObjectId(req.params.id) } }, function (err, data) {
         res.writeHead(200, {
             'Content-Type': 'application/json; charset=utf-8'
         });
@@ -149,8 +134,6 @@ server.get('/availableCourses/:id', function (req, res, next) {
     });
     return next();
 });
-
-
 
 server.post('/course', function (req, res, next) {
     var course = JSON.parse(req.body);
@@ -165,11 +148,10 @@ server.post('/course', function (req, res, next) {
 });
 
 server.post('/enrollcourse/:id', function (req, res, next) {
-    var studentId = JSON.parse(req.body); // ide neeku {studentId:"blah blah"} la ostundemo./
-    console.log(">>>>>>>>>> ", studentId);
+    var studentId = JSON.parse(req.body); 
     db.courses.findOne(ObjectId(req.params.id), function (err, data) {
         db.courses.update({ _id: ObjectId(req.params.id) },
-            { $push: { "students":  studentId  } },
+            { $push: { "students": ObjectId(studentId) } },
             function (err, data) {
                 res.writeHead(200, {
                     'Content-Type': 'application/json; charset=utf-8'
@@ -184,7 +166,7 @@ server.post('/dropCourse/:id', function (req, res, next) {
     var studentId = JSON.parse(req.body);
     db.courses.findOne(ObjectId(req.params.id), function (err, data) {
         db.courses.update({ _id: ObjectId(req.params.id) },
-            { $pull: { "students": { "studentId": studentId } } },
+            { $pull: { "students": ObjectId(studentId) } },
             function (err, data) {
                 res.writeHead(200, {
                     'Content-Type': 'application/json; charset=utf-8'
@@ -225,8 +207,7 @@ server.post('/course/:id', function (req, res, next) {
     });
 });
 server.get('/course/:id', function (req, res, next) {
-    db.courses.findOne(
-        ObjectId(req.params.id)
+    db.courses.findOne(ObjectId(req.params.id)
         , function (err, data) {
             res.writeHead(200, {
                 'Content-Type': 'application/json; charset=utf-8'
@@ -235,5 +216,52 @@ server.get('/course/:id', function (req, res, next) {
         });
     return next();
 });
+server.get('/professor/:id', function(req, res, next) {
+     db.courses.findOne(ObjectId(req.params.id)
+        , function (err, data) {
+            console.log("data.professorID " , data.professorID);
+            db.appUsers.findOne(ObjectId(data.professorID), function (err, userData) {
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8'
+                });
+                userData.password = "";
+                res.end(JSON.stringify(userData));
+            });
+            return next();
+        });
+})
+server.post('/course/:id/studentFullData', function(req, res, next) {
+    var studentFullData = JSON.parse(req.body); 
+    console.log(studentFullData);
+    db.courses.findOne(ObjectId(req.params.id), function (err, data) {
+        db.courses.update({ _id: ObjectId(req.params.id) },
+            { $addToSet: { "studentsFullData": studentFullData} },
+            function (err, data) {
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8'
+                });
+            });
+        res.end(JSON.stringify(data));
+        return next();
+    });
+})
+
+server.get('/course/:id/users', function (req, res, next) {
+    db.courses.findOne(
+        ObjectId(req.params.id)
+        , function (err, data) {
+            db.appUsers.find({'_id' : { $in: data.students }}, function (err, data) {
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8'
+                });
+                for(var user of data) {
+                    user.password = "";
+                }
+                res.end(JSON.stringify(data));
+            });
+            return next();
+        });
+});
+
 
 module.exports = server;

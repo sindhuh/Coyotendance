@@ -1,23 +1,24 @@
-<!--
-  Generated template for the CourseDetailsPage page.
-
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-navbar primary *navbar>
   <ion-title>course-details</ion-title>
   <ion-buttons end>
-    <button (click) ="editClass()">EDIT</button>
+    <button (click)="editClass()">EDIT</button>
   </ion-buttons>
 </ion-navbar>
 <ion-content padding class="course-details">
- <ion-card>
-     <ion-card-header>
-       {{course.name}}
+  <ion-card>
+    <ion-card-header>
+      {{course.name}}
     </ion-card-header>
     <ion-card-content>
-        {{course.title}}<br>
-       {{course.location}} 
+      {{course.title}}<br> {{course.location}} <br> professor : {{professor.name}}
     </ion-card-content>
   </ion-card>
+  <ion-list>
+    <h5>Students :</h5>
+    <ion-item-sliding *ngFor="#student of enrolledStudents">
+      <ion-item>
+        {{student.name}} {{student.coyoteID}}
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
 </ion-content>

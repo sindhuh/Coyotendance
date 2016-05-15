@@ -13,30 +13,39 @@ import {Backend} from '../../providers/backend/backend';
 })
 export class CourseDetailsPage {
   course: any;
-  enrolledStudents : any[]
+  enrolledStudents: any[] = [];
+  professor: any;
   constructor(public nav: NavController, public backend: Backend, public navParams: NavParams) {
-    this.course = {}; 
+    this.course = {};
+    this.professor = {};
+  }
+
+  editClass() {
+    this.nav.push(AddCoursePage, { id: this.course._id });
   }
   
-  editClass() {
-    this.nav.push(AddCoursePage, {id: this.course._id});
-  }
   onPageWillEnter() {
-    if(this.navParams.get('id') != undefined) {
+    if (this.navParams.get('id') != undefined) {
       this.backend.getCourse(this.navParams.get('id')).then(course => {
         this.course = course;
-      this.backend.getEnrolledStudents(this.course.students).then(enrolledStudents => {
-          this.enrolledStudents = enrolledStudents;
-          console.log("ikkadena :" ,this.enrolledStudents);
+        var self = this;
+        if (this.enrolledStudents.length == 0) {
+          this.backend.getEnrolledStudents(this.course._id).then(enrolledStudents => {
+            this.enrolledStudents = enrolledStudents;
+          });
+        }
+        
+        this.backend.getProfessor(self.course._id).then(professorData => {
+          this.professor = professorData;
         })
-      }); 
-    }                       
+      });
+    }
   }
- /* onPageLoaded
-  onPageWillEnter
-  onPageDidEnter
-  onPageWillLeave 
-  onPageDidLeave 
-  onPageWillUnload
-  onPageDidUnload */
+  /* onPageLoaded
+   onPageWillEnter
+   onPageDidEnter
+   onPageWillLeave 
+   onPageDidLeave 
+   onPageWillUnload
+   onPageDidUnload */
 }
