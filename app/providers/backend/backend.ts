@@ -17,12 +17,8 @@ export class Backend {
 
   constructor(public http: Http) {
     this.userDetails = JSON.parse(localStorage.getItem("userObject"));
-  }
-
-  studentsEnrolled(course_id: any) {
 
   }
-
   __addOrUpdateCourse(course: any) {
     if (this.courseById[course._id]) {
       this.__removeCourse(course._id);
@@ -33,6 +29,7 @@ export class Backend {
 
   __removeCourse(id: string) {
     var course = this.courseById[id];
+    console.log("remove", this.courseById[id]);
     var index = this.courses.indexOf(course, 0);
     if (index > -1) {
       this.courses.splice(index, 1);
@@ -40,44 +37,61 @@ export class Backend {
   }
 
   _removeEnrolledCourse(id) {
-    var course = this.courseById[id];
-    var index = this.enrolled.indexOf(course, 0);
-    console.log("index ", id + index);
+    var index = this.enrolled.map(function (x) { return x._id; }).indexOf(id);
+    console.log("id , index : " + id + " >>>>>>" + index);
     if (index > -1) {
       this.enrolled.splice(index, 1);
+      console.log("this.enrolled ", this.enrolled);
     }
   }
 
   _removeAvailableCourse(id) {
-    var index = this.available.indexOf(id, 0);
-    console.log("index ", id + index);
+    var index = this.available.map(function (x) { return x._id; }).indexOf(id);
+    console.log("id , index : " + id + " >>>>>>" + index);
     if (index > -1) {
       this.available.splice(index, 1);
+      for (var course of this.available) {
+        console.log("this.available ", course);
+      }
     }
   }
 
   _addEnrolledCourses(course) {
     this.enrolled.push(course);
-    this._removeAvailableCourse(course._id);
   }
 
-  _addDroppedCourses(course) {
+  _addAvailableCourses(course) {
     this.available.push(course);
-    this._removeEnrolledCourse(course._id);
   }
-  //ToDO little bit confused here
-  getEnrolledStudents(course) {
-    var courseJson = JSON.stringify(course);
+ 
+  getEnrolledStudents(course_id) {
+    var courseId = JSON.stringify(course_id);
     return new Promise<any[]>(resolve => {
-      this.http.post(this.BASE_URL + "users", courseJson)
+      this.http.get(this.BASE_URL + "course/" + course_id + "/" + "users")
         .map(res => res.json())
         .subscribe(data => {
-          this.studentEnrolledForClass.push(data);
+          this.studentEnrolledForClass = data;
+          this.studentFullData(data, course_id);
           resolve(this.studentEnrolledForClass);
         });
     });
   }
-
+  
+  studentFullData(data : any[], course_id) {
+    var studentFullData = JSON.stringify(data);
+    var courseId = JSON.stringify(course_id);
+    console.log("courseID : " +courseId);
+    console.log("studentFullData : " +studentFullData);
+    return new Promise<any[]>(resolve => {
+      this.http.post(this.BASE_URL + "course/" + course_id + "/studentFullData", studentFullData)
+        .map(res => res.json())
+        .subscribe(data => {
+          this.studentEnrolledForClass = data;
+          resolve(this.studentEnrolledForClass);
+        });
+    });
+  }
+  
   initialize(userId) {
     if (this.initialized) {
       return Promise.resolve(true);
@@ -122,8 +136,9 @@ export class Backend {
         .map(res => res.json())
         .subscribe(data => {
           for (var course of data) {
-            this._addDroppedCourses(course);
+            this._addAvailableCourses(course);
           }
+          console.log("this.available ", this.available);
           resolve(this.available);
         });
     });
@@ -136,6 +151,7 @@ export class Backend {
           for (var course of data) {
             this._addEnrolledCourses(course);
           }
+          console.log("this.enrolled ", this.enrolled);
           resolve(this.enrolled);
         });
     });
@@ -176,21 +192,20 @@ export class Backend {
         });
     });
   }
-  
+
   getProfessor(course_id) {
-    var courseId = JSON.stringify(course_id);  
     return new Promise(resolve => {
-      this.http.get(this.BASE_URL + "professor/" +courseId)
+      this.http.get(this.BASE_URL + "professor/" + course_id)
         .map(res => res.json())
         .subscribe(data => {
-          this._addDroppedCourses(data);
+          console.log(data);
           resolve(data);
         });
     });
   }
-  
+
   enrollCourse(course_id) {
-    var studentId = JSON.stringify(this.userDetails._id);    
+    var studentId = JSON.stringify(this.userDetails._id);
     console.log("studen : " + studentId)
     var headers = new Headers({ 'Content-Type': 'application/json' });
     var options = new RequestOptions({ headers: headers });
@@ -199,6 +214,7 @@ export class Backend {
         .map(res => res.json())
         .subscribe(data => {
           this._addEnrolledCourses(data);
+          this._removeAvailableCourse(data._id);
           resolve(data);
         });
     });
@@ -212,7 +228,8 @@ export class Backend {
       this.http.post(this.BASE_URL + "dropCourse/" + course_id, studentId)
         .map(res => res.json())
         .subscribe(data => {
-          this._addDroppedCourses(data);
+          this._addAvailableCourses(data);
+          this._removeEnrolledCourse(data._id);
           resolve(data);
         });
     });
@@ -283,16 +300,6 @@ export class Backend {
       this.http.post(this.BASE_URL + "prof_attendance", "")
         .subscribe(data => {
           resolve(data);
-        });
-    });
-  }
-
-  login(userId, password) {
-    return new Promise(resolve => {
-      this.http.post(this.BASE_URL + "login", "")
-        .subscribe(data => {
-          this.user =
-            resolve(data);
         });
     });
   }
